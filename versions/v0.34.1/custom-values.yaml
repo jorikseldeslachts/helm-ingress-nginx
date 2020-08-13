@@ -1,0 +1,113 @@
+---
+
+#######################################################################
+# Values for ingress-nginx Kubernetes ingress controller
+# Version v0.34.1
+#######################################################################
+
+
+#######################################################################
+# controller
+#######################################################################
+controller:
+
+  # Run on all master nodes
+  kind: Daemonset
+
+  # Nodeselector if you want to limit the nodes it can run on
+  nodeSelector: {}
+
+  # Docker image
+  image:
+    repository: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
+    tag: "v0.34.1"
+    pullPolicy: IfNotPresent
+
+  # Cluster DNS
+  controller.dnsPolicy: ClusterFirst
+
+  # Limit the scope of the ingress controller
+  scope:
+    enabled: false
+    namespace: ""
+
+  # Health checks
+  healthCheckPath: "/healthz"
+
+  # Time to wait for the drain of connections
+  terminationGracePeriodSeconds: 180
+
+  # Controller pod resource requests & limits
+  # https://github.com/kubernetes/ingress-nginx/issues/4735#issuecomment-551204903
+  # https://engineering.indeedblog.com/blog/2019/12/cpu-throttling-regression-fix/
+  resources:
+    requests:
+      cpu: 200m
+      memory: 200Mi
+
+
+#######################################################################
+# RBAC
+#######################################################################
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+    name: ingress-nginx-administrator
+
+#######################################################################
+# Service
+#######################################################################
+  service:
+    enabled: true
+    type: NodePort
+
+    # If controller.service.type is NodePort or LoadBalancer,
+    # set this to Local to enablesource IP preservation
+    externalTrafficPolicy: "Local"
+    # healthCheckNodePort: 30254
+
+    # Port mappings of service object
+    targetPorts:
+      http: 80
+      https: 443
+    ports:
+      http: 80
+      https: 443
+    nodePorts:
+      http: 30080
+      https: 30443
+
+
+#######################################################################
+# AdmissionWebhooks (Validating ingress syntax)
+#######################################################################
+  admissionWebhooks:
+    enabled: true
+    port: 8443
+    path:
+      enabled: true
+      image:
+        repository: jettech/kube-webhook-certgen
+        tag: v1.2.0
+        pullPolicy: IfNotPresent
+
+
+#######################################################################
+# Default backend
+#######################################################################
+  defaultBackend:
+    enabled: true
+    image:
+      repository: k8s.gcr.io/defaultbackend-amd64
+      tag: 1.5
+      pullPolicy: IfNotPresent
+    port: 80
+    replicaCount: 2
+
+
+#######################################################################
+# Metrics (Prometheus)
+#######################################################################
+  metrics:
+    enabled: false
