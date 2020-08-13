@@ -15,6 +15,7 @@ $ chmod 700 get_helm.sh
 $ ./get_helm.sh
 ```
 
+
 ## Setup
 ```sh
 # add the helm repo
@@ -32,6 +33,10 @@ $ helm install \
 # check
 helm list
 ```
+
+
+# Custom Values
+The variables that can be used in the `custom-values.yaml` files are listed on [Github](https://github.com/kubernetes/ingress-nginx/tree/master/charts/ingress-nginx#configuration).
 
 
 ## Contributors
