@@ -12,15 +12,16 @@
 controller:
 
   # Run on all master nodes
-  kind: Daemonset
+  kind: DaemonSet
 
   # Nodeselector if you want to limit the nodes it can run on
   nodeSelector: {}
 
   # Docker image
   image:
-    repository: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
-    tag: "v0.34.1"
+    registry: eu.gcr.io
+    repository: k8s-artifacts-prod/ingress-nginx/controller
+    tag: v0.34.1
     pullPolicy: IfNotPresent
 
   # Cluster DNS
@@ -64,8 +65,8 @@ controller:
 
     # If controller.service.type is NodePort or LoadBalancer,
     # set this to Local to enablesource IP preservation
+    # https://kubernetes.io/docs/tutorials/services/source-ip/#source-ip-for-services-with-typenodeport
     externalTrafficPolicy: "Local"
-    # healthCheckNodePort: 30254
 
     # Port mappings of service object
     targetPorts:
@@ -103,7 +104,6 @@ controller:
       tag: 1.5
       pullPolicy: IfNotPresent
     port: 80
-    replicaCount: 2
 
 
 #######################################################################
