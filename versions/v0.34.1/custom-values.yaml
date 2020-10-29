@@ -15,7 +15,9 @@ controller:
   kind: DaemonSet
 
   # Nodeselector if you want to limit the nodes it can run on
-  nodeSelector: {}
+  nodeSelector:
+    node-role.kubernetes.io/master: "true"
+
 
   # Docker image
   image:
